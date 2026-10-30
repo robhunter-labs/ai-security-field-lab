@@ -4,13 +4,15 @@ This is where I keep the working side of my writing about AI and security: studi
 
 Bigger pieces live in their own repositories and are indexed here. Smaller ones get a folder on this shelf as they're written.
 
-| Study | What it is | Essay | Where |
-|---|---|---|---|
-| Declared, not wired | Paired allowed and denied routes that show whether a declared control actually sits on the path that acts | [Declared, Not Wired](https://robhunterworks.com/writing/declared-not-wired/) | [declared-not-wired](https://github.com/robhunter-labs/declared-not-wired) |
-| VulnHunter against crAPI | One controlled evaluation of an AI security tool against a deliberately vulnerable API | [VulnHunter field study](https://robhunterworks.com/writing/vulnhunter-crapi/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study) |
-| Local model bench | A bench, threat model, controls and pen-test map for a refusal-reduced model running on one laptop | [The Model That Says Yes](https://robhunterworks.com/writing/the-model-that-says-yes/) | [local-model-bench](https://github.com/robhunter-labs/local-model-bench) |
+Status labels are the same for every study listed here (the practice framework, a document set, uses Published instead): **Observed** (it happened, and the record is in the repo), **Built, not exercised** (the code exists and passes its own tests, but hasn't been run against a real system), and **Planned** (written down so it gets done; not done).
 
-## Coming
+| Study | What it is | Status | Essay | Where |
+|---|---|---|---|---|
+| Declared, not wired | Paired allowed and denied routes that show whether a declared control actually sits on the path that acts | Built, not exercised | [Declared, Not Wired](https://robhunterworks.com/writing/declared-not-wired/) | [declared-not-wired](https://github.com/robhunter-labs/declared-not-wired) |
+| VulnHunter against crAPI | One controlled evaluation of an AI security tool against a deliberately vulnerable API | Observed (one controlled run) | [VulnHunter field study](https://robhunterworks.com/writing/vulnhunter-crapi/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study) |
+| Local model bench | A bench, threat model, controls and pen-test map for a refusal-reduced model running on one laptop | Observed, plus built-not-exercised checks | [The Model That Says Yes](https://robhunterworks.com/writing/the-model-that-says-yes/) | [local-model-bench](https://github.com/robhunter-labs/local-model-bench) |
+
+## Planned
 
 These shelves are empty on purpose. An empty shelf says what's coming without pretending it's here.
 
