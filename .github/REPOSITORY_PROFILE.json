@@ -1,0 +1,83 @@
+{
+  "schema": "kingdom.repository-profile.v1",
+  "repository": {
+    "name": "robhunter-labs/ai-security-field-lab",
+    "expected_remote": "https://github.com/robhunter-labs/ai-security-field-lab.git",
+    "default_branch": "main"
+  },
+  "purpose": "Public source and evidence shelf for Rob Hunter AI-security field studies.",
+  "owner_node": "RobHunterLabs",
+  "steward": "RobHunterLabs",
+  "visibility": "public",
+  "audience": [
+    "PUBLIC"
+  ],
+  "lifecycle": "RELEASE",
+  "collaboration_mode": "public",
+  "publication_authority": "Repository owner",
+  "content_policy": {
+    "allowed_prefixes": [
+      ".github/"
+    ],
+    "allowed_root_files": [
+      ".gitignore",
+      "LICENSE",
+      "README.md",
+      "SECURITY.md"
+    ],
+    "prohibited_globs": [
+      "**/.DS_Store",
+      "**/*RECEIPT*",
+      "**/evidence/**",
+      "**/raw-intake/**",
+      "**/runtime/**",
+      "**/quarantine/**",
+      "_workbench/**",
+      "_design/**"
+    ],
+    "prohibited_components": [
+      ".git",
+      ".venv",
+      "__pycache__",
+      "_capsule",
+      "_inbox",
+      "node_modules"
+    ],
+    "prohibited_suffixes": [
+      ".env",
+      ".key",
+      ".p12",
+      ".pem",
+      ".tfstate",
+      ".png",
+      ".jpg"
+    ],
+    "local_only_markers": [
+      "backup: local-only",
+      "sensitivity: restricted",
+      "source_state: WITHHELD",
+      "source_state: OWNER_PRIVATE"
+    ],
+    "max_file_bytes": 1048576,
+    "binary_policy": "deny",
+    "explicit_staging_required": true,
+    "private_terms": "Sensitive terms are never stored in this repository, hashed or plain. Leak checks read their term list from outside the tree."
+  },
+  "security_policy": {
+    "default_branch_pr": "owner-direct",
+    "codeowners": "planned",
+    "signed_commits": "required",
+    "secret_scanning": "unwitnessed",
+    "push_protection": "unwitnessed",
+    "actions_sha_pinning": "not_applicable",
+    "default_token_permissions": "none"
+  },
+  "automation_policy": {
+    "mode": "manual",
+    "cloud_deployment": "none",
+    "unattended_push": "disabled"
+  },
+  "retention_and_rollback": "Signed Git history and reviewed revert; synthetic code only. Private source and workbench remain outside this repository.",
+  "incident_contact": "Repository owner through GitHub",
+  "exceptions": []
+}
