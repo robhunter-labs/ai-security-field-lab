@@ -1,0 +1,46 @@
+{
+  "fixture_id": "F18",
+  "synthetic": true,
+  "title": "Two candidates that differ only in auth level must not merge",
+  "classes": [
+    "A8",
+    "B1"
+  ],
+  "rule": "never merge across auth level, route, middleware or parameter",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "candidates": [
+      {
+        "id": "cand-orders-anon",
+        "url": "https://api.example.test/v2/orders/48213",
+        "method": "GET",
+        "auth_context": "anonymous",
+        "sink_class": "object-read",
+        "parameter": "path:order_id",
+        "observations": []
+      }
+    ]
+  },
+  "candidate": {
+    "id": "cand-orders-user",
+    "url": "https://api.example.test/v2/orders/50777",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "object-read",
+    "parameter": "path:order_id",
+    "observations": []
+  },
+  "transition": {
+    "state": "merged",
+    "into": "cand-orders-anon",
+    "reason": "SAME_CLAIM_KEY",
+    "claim_key": "GET | https://api.example.test/v2/orders/{int} | auth=anonymous | sink=object-read | param=path:order_id"
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "NEVER_MERGE_AXIS"
+    ]
+  }
+}

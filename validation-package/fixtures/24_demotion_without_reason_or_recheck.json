@@ -1,0 +1,31 @@
+{
+  "fixture_id": "F24",
+  "synthetic": true,
+  "title": "A demotion with no reason code and no recheck date is refused",
+  "classes": [],
+  "rule": "a demotion needs a reason code and a recheck date",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-orders-9",
+    "url": "https://api.example.test/v2/orders/1",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "object-read",
+    "parameter": "path:order_id",
+    "observations": []
+  },
+  "transition": {
+    "state": "demoted",
+    "note": "looks like noise"
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "DEMOTION_WITHOUT_REASON",
+      "DEMOTION_WITHOUT_RECHECK"
+    ]
+  }
+}

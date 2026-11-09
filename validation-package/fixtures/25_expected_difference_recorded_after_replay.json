@@ -1,0 +1,27 @@
+{
+  "fixture_id": "F25",
+  "synthetic": true,
+  "title": "High: expected difference written after the replay is refused",
+  "classes": [
+    "T5"
+  ],
+  "rule": "for High and Critical the expected difference is recorded before replay",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "controls": {
+      "expected_difference": {
+        "recorded_at": "2026-11-03T15:30:00Z"
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "PREREG_AFTER_REPLAY"
+    ]
+  }
+}

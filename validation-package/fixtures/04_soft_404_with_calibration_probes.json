@@ -1,0 +1,72 @@
+{
+  "fixture_id": "F04",
+  "synthetic": true,
+  "title": "Soft 404: candidate matches two calibration probes; demotion accepted",
+  "classes": [
+    "D1",
+    "D2"
+  ],
+  "rule": "a demotion needs a reason code the evidence supports, and a recheck date",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-dotenv",
+    "url": "https://www.example.test/.env",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "file-exposure",
+    "parameter": null,
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://www.example.test/.env",
+        "status": 200,
+        "content_type": "text/html",
+        "body_sha256": "f0914ab7a105c1e3a4a4dbd3bb394e2871d02f2506742eeb7f03de93a3a4f7aa",
+        "body_len": 5118,
+        "words": 402,
+        "lines": 88,
+        "title": "Example Store"
+      },
+      {
+        "id": "cal-1",
+        "role": "calibration",
+        "url": "https://www.example.test/x7f3k9q2.txt",
+        "status": 200,
+        "content_type": "text/html",
+        "body_sha256": "081d745fd97a86ba23da2c0fe2f2b253194e65a8992694e9c8b50d6af47f54cb",
+        "body_len": 5120,
+        "words": 402,
+        "lines": 88,
+        "title": "Example Store"
+      },
+      {
+        "id": "cal-2",
+        "role": "calibration",
+        "url": "https://www.example.test/zz-41b0c.bak",
+        "status": 200,
+        "content_type": "text/html",
+        "body_sha256": "a6338af1b97c71dfe047bd7e5d897c52e78252280875b8b91d8807437521f4ae",
+        "body_len": 5126,
+        "words": 402,
+        "lines": 88,
+        "title": "Example Store"
+      }
+    ]
+  },
+  "transition": {
+    "state": "demoted",
+    "reason_code": "SOFT_404",
+    "recheck_by": "2026-11-24"
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": [],
+    "labels": [
+      "SOFT_404"
+    ]
+  }
+}

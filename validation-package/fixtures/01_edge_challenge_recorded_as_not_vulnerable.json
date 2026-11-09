@@ -1,0 +1,66 @@
+{
+  "fixture_id": "F01",
+  "synthetic": true,
+  "title": "Edge challenge page recorded as 'not vulnerable' is refused",
+  "classes": [
+    "C4",
+    "D4"
+  ],
+  "rule": "'blocked at edge' may not be recorded as 'not vulnerable'",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-search-xss",
+    "url": "https://shop.example.test/api/search?q=probe",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "html-reflection",
+    "parameter": "query:q",
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://shop.example.test/api/search?q=%3Csvg%20onload%3Dprint()%3E",
+        "status": 403,
+        "headers": {
+          "cf-mitigated": "challenge",
+          "content-type": "text/html; charset=UTF-8",
+          "server": "cloudflare"
+        },
+        "expected_content_type": "application/json",
+        "content_type": "text/html",
+        "body_sha256": "2e3957daa8b6882c45ef33d98223e74c23ab4a50d1d741823004dfd6ee84ac83",
+        "title": "Just a moment..."
+      }
+    ]
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "refuted",
+    "reason": "Payload blocked by the WAF; not vulnerable.",
+    "oracle": {
+      "type": "browser-execution",
+      "observation_refs": [
+        "obs-1"
+      ],
+      "positive_control": {
+        "description": "A harness page with the same payload shape executes print() in the same headless browser.",
+        "ran": true,
+        "fired": true
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "EDGE_RECORDED_AS_NOT_VULNERABLE"
+    ],
+    "labels": [
+      "EDGE_CHALLENGE",
+      "CONTENT_TYPE_SWAP"
+    ],
+    "suggested_state": "blocked_at_edge_origin_unknown"
+  }
+}

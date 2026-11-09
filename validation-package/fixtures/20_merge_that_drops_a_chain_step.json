@@ -1,0 +1,53 @@
+{
+  "fixture_id": "F20",
+  "synthetic": true,
+  "title": "A merge that would drop a chain step is refused",
+  "classes": [
+    "A8",
+    "G7"
+  ],
+  "rule": "a merge may not drop a chain step",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "candidates": [
+      {
+        "id": "cand-orders-1",
+        "url": "https://API.example.test/v2/orders/48213/?a=1&b=2",
+        "method": "GET",
+        "auth_context": "user",
+        "sink_class": "object-read",
+        "parameter": "path:order_id",
+        "observations": []
+      }
+    ]
+  },
+  "candidate": {
+    "id": "cand-orders-3",
+    "url": "https://api.example.test/v2/orders/61002?b=6&a=5",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "object-read",
+    "parameter": "path:order_id",
+    "observations": [],
+    "chain_steps": [
+      {
+        "chain_id": "CH-7",
+        "step": 2,
+        "role": "order read leaks internal callback URL used by the SSRF step"
+      }
+    ]
+  },
+  "transition": {
+    "state": "merged",
+    "into": "cand-orders-1",
+    "reason": "SAME_CLAIM_KEY",
+    "claim_key": "GET | https://api.example.test/v2/orders/{int}?a&b | auth=user | sink=object-read | param=path:order_id"
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "MERGE_DROPS_CHAIN_STEP"
+    ]
+  }
+}

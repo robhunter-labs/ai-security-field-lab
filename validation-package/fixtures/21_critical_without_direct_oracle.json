@@ -1,0 +1,57 @@
+{
+  "fixture_id": "F21",
+  "synthetic": true,
+  "title": "A Critical on version evidence alone caps at 'High, pending'",
+  "classes": [
+    "H1",
+    "T5"
+  ],
+  "rule": "Critical needs a direct oracle, an independent replay, reachability and proven impact",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "claim": {
+      "statement": "Remote code execution in ExampleGateway 4.2.1 on gw1.example.test, inferred from the advisory's affected version range.",
+      "class": "vulnerable component",
+      "asset": "gw1.example.test",
+      "precondition": "network reach to the management port",
+      "effect": "code execution (per advisory; not observed)",
+      "non_unique_classes": [
+        "H1"
+      ],
+      "request_shape": null
+    },
+    "severity": {
+      "tool_rating": "Critical",
+      "validated_rating": "Critical",
+      "cvss_v4_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+      "evidence": {
+        "reachability": "proven",
+        "impact": "inferred"
+      }
+    },
+    "oracle": {
+      "type": "version-or-reachability",
+      "strength": "moderate",
+      "bounded_output": "Product banner and version string only.",
+      "positive_control": {
+        "description": "The same version probe returns the known version on a lab host running 4.2.1.",
+        "ran": true,
+        "fired": true
+      }
+    },
+    "replay": {
+      "independent_replay": null
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "CRITICAL_GATE"
+    ],
+    "severity_cap": "High, pending"
+  }
+}

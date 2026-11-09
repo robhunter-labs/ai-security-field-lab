@@ -17,7 +17,8 @@
   "publication_authority": "Repository owner",
   "content_policy": {
     "allowed_prefixes": [
-      ".github/"
+      ".github/",
+      "validation-package/"
     ],
     "allowed_root_files": [
       ".gitignore",

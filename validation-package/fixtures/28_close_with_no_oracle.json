@@ -1,0 +1,34 @@
+{
+  "fixture_id": "F28",
+  "synthetic": true,
+  "title": "A close with oracle type 'none' is refused",
+  "classes": [
+    "T1",
+    "T2"
+  ],
+  "rule": "only an oracle may close",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "oracle": {
+      "type": "none",
+      "strength": "none",
+      "bounded_output": "None.",
+      "positive_control": {
+        "description": "Not applicable.",
+        "ran": false,
+        "fired": false
+      },
+      "if_none_what_would_settle": "A second seeded identity reading the owner's invoice."
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "CLOSE_WITHOUT_ORACLE"
+    ]
+  }
+}

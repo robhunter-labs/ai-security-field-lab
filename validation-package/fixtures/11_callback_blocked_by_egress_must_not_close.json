@@ -1,0 +1,63 @@
+{
+  "fixture_id": "F11",
+  "synthetic": true,
+  "title": "No callback while the egress canary also failed: refutation refused",
+  "classes": [
+    "C3",
+    "C10"
+  ],
+  "rule": "every close needs a positive control that fired",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "target_egress_cidrs": [
+      "192.0.2.0/24"
+    ],
+    "intermediary_asn_orgs": [
+      "ExampleCDN",
+      "ExampleMailScanner"
+    ],
+    "egress_conditions": {
+      "tester_side": "listener reachable from the internet",
+      "target_side": "unknown; canary did not arrive"
+    }
+  },
+  "candidate": {
+    "id": "cand-ssrf",
+    "url": "https://api.example.test/v2/webhooks/test",
+    "method": "POST",
+    "auth_context": "user",
+    "sink_class": "server-side-fetch",
+    "parameter": "body:url",
+    "observations": []
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "refuted",
+    "reason": "No callback received; not vulnerable to SSRF.",
+    "oracle": {
+      "type": "out-of-band",
+      "positive_control": {
+        "description": "Ask the target to fetch a known-good canary URL on the same listener (egress canary).",
+        "ran": true,
+        "fired": false
+      },
+      "evidence": {
+        "probe_token": "t-91af2c",
+        "decoy_token": "d-77c0e1",
+        "callbacks": []
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "POSITIVE_CONTROL_DID_NOT_FIRE"
+    ],
+    "labels": [
+      "NO_CALLBACK",
+      "EGRESS_UNVERIFIED"
+    ],
+    "suggested_state": "demoted"
+  }
+}

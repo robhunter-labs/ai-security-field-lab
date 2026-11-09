@@ -1,0 +1,66 @@
+{
+  "fixture_id": "F15",
+  "synthetic": true,
+  "title": "Jittered timing with 8 baseline samples and one slow response cannot confirm",
+  "classes": [
+    "E1",
+    "E4"
+  ],
+  "rule": "timing is a statistical oracle: enough baseline, interleaved controls, dose-response",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-sort-sqli",
+    "url": "https://api.example.test/v2/reports?sort=name",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "sql",
+    "parameter": "query:sort",
+    "observations": []
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "confirmed",
+    "reason": "Response delay tracks the injected sleep.",
+    "oracle": {
+      "type": "timing-distribution",
+      "positive_control": {
+        "description": "A lab endpoint with a known 2 s server-side sleep crosses the threshold under the same network path.",
+        "ran": true,
+        "fired": true
+      },
+      "evidence": {
+        "baseline_s": [
+          0.217,
+          0.272,
+          0.296,
+          0.892,
+          0.762,
+          0.191,
+          0.34,
+          0.705
+        ],
+        "trials": [
+          {
+            "requested_delay_s": 5,
+            "observed_s": 5.41
+          },
+          {
+            "requested_delay_s": 0,
+            "observed_s": 0.31
+          }
+        ],
+        "interleaved": false
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "TIMING_INSUFFICIENT"
+    ],
+    "suggested_state": "demoted"
+  }
+}

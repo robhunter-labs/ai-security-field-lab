@@ -1,0 +1,65 @@
+{
+  "fixture_id": "F10",
+  "synthetic": true,
+  "title": "The target sends the header too: tester-path demotion refused",
+  "classes": [
+    "C1"
+  ],
+  "rule": "the proxy may mask a real header the target also sends",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "tester_chain_signatures": [
+      {
+        "header": "Via",
+        "contains": "tester-gw"
+      }
+    ]
+  },
+  "candidate": {
+    "id": "cand-via",
+    "url": "https://api.example.test/health",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "info-disclosure-header",
+    "parameter": null,
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "path": "proxy",
+        "url": "https://api.example.test/health",
+        "status": 200,
+        "headers": {
+          "Via": "1.1 tester-gw (squid/5.7)",
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        "id": "obs-2",
+        "role": "direct-replay",
+        "path": "direct",
+        "url": "https://api.example.test/health",
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json",
+          "Via": "1.1 origin-lb (squid/4.10)"
+        }
+      }
+    ]
+  },
+  "transition": {
+    "state": "demoted",
+    "reason_code": "TESTER_PATH_ARTIFACT",
+    "recheck_by": "2026-12-01"
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "REASON_NOT_SUPPORTED_BY_EVIDENCE"
+    ],
+    "labels": [
+      "TARGET_ALSO_SENDS_HEADER"
+    ]
+  }
+}

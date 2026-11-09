@@ -1,0 +1,67 @@
+{
+  "fixture_id": "F08",
+  "synthetic": true,
+  "title": "Alias host folds into one claim; a different tenant on the same CDN IP does not",
+  "classes": [
+    "A2",
+    "A3"
+  ],
+  "rule": "group by observed application behavior, never by shared IP",
+  "kind": "group",
+  "group_by": "claim",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "scope_hosts": [
+      "api.example.test",
+      "legacy-api.example.test",
+      "shop.example.test"
+    ]
+  },
+  "candidates": [
+    {
+      "id": "c1",
+      "url": "https://api.example.test/v2/invoices/48213",
+      "method": "GET",
+      "auth_context": "user",
+      "sink_class": "object-read",
+      "parameter": "path:invoice_id",
+      "resolved_ip": "203.0.113.10",
+      "backend_fingerprint": "fp-billing-7f3a",
+      "cert_san_sha256": "san-1"
+    },
+    {
+      "id": "c2",
+      "url": "https://legacy-api.example.test/v2/invoices/50777",
+      "method": "GET",
+      "auth_context": "user",
+      "sink_class": "object-read",
+      "parameter": "path:invoice_id",
+      "resolved_ip": "203.0.113.10",
+      "backend_fingerprint": "fp-billing-7f3a",
+      "cert_san_sha256": "san-1"
+    },
+    {
+      "id": "c3",
+      "url": "https://shop.example.test/v2/invoices/48213",
+      "method": "GET",
+      "auth_context": "user",
+      "sink_class": "object-read",
+      "parameter": "path:invoice_id",
+      "resolved_ip": "203.0.113.10",
+      "backend_fingerprint": "fp-shop-19c2",
+      "cert_san_sha256": "san-2"
+    }
+  ],
+  "expected": {
+    "verdict": "GROUPED",
+    "groups": [
+      [
+        "c1",
+        "c2"
+      ],
+      [
+        "c3"
+      ]
+    ]
+  }
+}

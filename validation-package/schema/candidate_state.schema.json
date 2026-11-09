@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/robhunter-labs/ai-security-field-lab/validation-package/schema/candidate_state.schema.json",
+  "title": "Candidate state (reason-coded, v0.1 prototype)",
+  "description": "A candidate is never deleted. Every state other than closed_by_oracle is a label with a re-test condition, not a verdict. A filter may lower a candidate's rank or change where it goes (merged, demoted, scope_hold, blocked_at_edge_origin_unknown, rebaseline_required); only an oracle may close it (closed_by_oracle). 'not_vulnerable' is deliberately not a state.",
+  "oneOf": [
+    { "$ref": "#/$defs/open" },
+    { "$ref": "#/$defs/merged" },
+    { "$ref": "#/$defs/demoted" },
+    { "$ref": "#/$defs/scope_hold" },
+    { "$ref": "#/$defs/blocked_at_edge_origin_unknown" },
+    { "$ref": "#/$defs/rebaseline_required" },
+    { "$ref": "#/$defs/not_reviewed_no_capacity" },
+    { "$ref": "#/$defs/closed_by_oracle" }
+  ],
+  "$defs": {
+    "open": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state"],
+      "properties": {
+        "state": { "const": "open" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "merged": {
+      "description": "Folded into another candidate with lineage kept. Refused across a never-merge axis (auth level, route, middleware, parameter) or when a chain step would be dropped.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "into", "reason", "claim_key"],
+      "properties": {
+        "state": { "const": "merged" },
+        "into": { "type": "string", "minLength": 1 },
+        "reason": { "enum": ["SAME_CLAIM_KEY", "REDIRECT_CONVERGES", "ALIAS_HOST", "SAME_COMPONENT_VERSION", "SAME_ROOT_CAUSE"] },
+        "claim_key": { "type": "string", "minLength": 1, "description": "The claim key string or its ck- id, as computed by check_package.claim_key()." },
+        "result_chain_steps": {
+          "description": "Chain steps the surviving record will carry. Every chain step of the merged candidate must appear here.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/_chain_step" }
+        },
+        "note": { "type": "string" }
+      }
+    },
+
+    "demoted": {
+      "description": "Lower rank, kept, aged and sampled. Needs a reason code and a recheck date.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason_code", "recheck_by"],
+      "properties": {
+        "state": { "const": "demoted" },
+        "reason_code": { "$ref": "#/$defs/_reason_code" },
+        "recheck_by": { "$ref": "#/$defs/_date" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "scope_hold": {
+      "description": "Stop testing; a person decides scope. Never counted as a duplicate.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason"],
+      "properties": {
+        "state": { "const": "scope_hold" },
+        "reason": { "type": "string", "minLength": 1 },
+        "note": { "type": "string" }
+      }
+    },
+
+    "blocked_at_edge_origin_unknown": {
+      "description": "The edge answered. Says nothing about the origin. The bypass search stays open.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "edge_evidence_ref", "bypass_search", "recheck_by"],
+      "properties": {
+        "state": { "const": "blocked_at_edge_origin_unknown" },
+        "edge_evidence_ref": { "type": "string", "minLength": 1 },
+        "bypass_search": { "const": "open" },
+        "recheck_by": { "$ref": "#/$defs/_date" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "rebaseline_required": {
+      "description": "The target changed between capture and validation. 'Fixed since' is not a false positive.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "reason", "observed_fingerprint"],
+      "properties": {
+        "state": { "const": "rebaseline_required" },
+        "reason": { "const": "TARGET_CHANGED" },
+        "observed_fingerprint": { "type": "object" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "not_reviewed_no_capacity": {
+      "description": "Shown rather than signed silently. Carries an age.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "since"],
+      "properties": {
+        "state": { "const": "not_reviewed_no_capacity" },
+        "since": { "$ref": "#/$defs/_date" },
+        "note": { "type": "string" }
+      }
+    },
+
+    "closed_by_oracle": {
+      "description": "The only closing state. Needs an oracle other than 'none' and a positive control that fired.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["state", "outcome", "reason", "oracle"],
+      "properties": {
+        "state": { "const": "closed_by_oracle" },
+        "outcome": { "enum": ["confirmed", "refuted"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "oracle": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["identity-differential", "out-of-band", "timing-distribution", "browser-execution", "live-effective-permission", "version-or-reachability", "none"] },
+            "positive_control": {
+              "type": ["object", "null"],
+              "properties": {
+                "description": { "type": "string" },
+                "ran": { "type": "boolean" },
+                "fired": { "type": "boolean" }
+              }
+            },
+            "observation_refs": { "type": "array", "items": { "type": "string" } },
+            "evidence": { "type": "object" }
+          }
+        },
+        "validation_fingerprint": { "type": "object", "description": "Target fingerprint observed at validation; compared with the candidate's captured_fingerprint." },
+        "package": { "type": "object", "description": "Optional full validation package; checked by check_package()." },
+        "note": { "type": "string" }
+      }
+    },
+
+    "_date": { "type": "string", "format": "date", "pattern": "^\\d{4}-\\d{2}-\\d{2}" },
+    "_chain_step": {
+      "type": "object",
+      "required": ["chain_id", "step"],
+      "properties": {
+        "chain_id": { "type": "string" },
+        "step": { "type": "integer", "minimum": 1 },
+        "role": { "type": "string" }
+      }
+    },
+    "_reason_code": {
+      "description": "Demotion reason codes. Each maps to catalog classes (see REASON_CLASSES in check_package.py). Codes marked evidence-backed are refused unless the matching detector fired.",
+      "enum": [
+        "SOFT_404",
+        "CATCH_ALL_200",
+        "LOGIN_BOUNCE",
+        "CACHE_ARTIFACT",
+        "TESTER_PATH_ARTIFACT",
+        "RATE_LIMITED",
+        "EGRESS_UNVERIFIED",
+        "DNS_ONLY_CALLBACK",
+        "INTERMEDIARY_CALLBACK",
+        "TIMING_INCONCLUSIVE",
+        "STOCHASTIC_LOW_RATE",
+        "VERSION_ONLY_EVIDENCE",
+        "NOT_SHOWN_REACHABLE",
+        "INTENTIONALLY_PUBLIC_IDENTIFIER",
+        "UNVERIFIED_SECRET",
+        "REQUIRES_PRIVILEGE",
+        "INTERNAL_ONLY",
+        "VENDOR_OWNED_LAYER",
+        "WEAKNESS_NOT_VULNERABILITY",
+        "KNOWN_OR_ACCEPTED"
+      ]
+    }
+  }
+}

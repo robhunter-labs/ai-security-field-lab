@@ -1,0 +1,19 @@
+{
+  "fixture_id": "F29",
+  "synthetic": true,
+  "title": "A complete High package passes every rule",
+  "classes": [
+    "F3"
+  ],
+  "rule": "all package rules",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {},
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": []
+  }
+}
