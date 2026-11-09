@@ -1,0 +1,51 @@
+{
+  "fixture_id": "F02",
+  "synthetic": true,
+  "title": "Edge challenge page held as 'blocked at edge, origin unknown' is accepted",
+  "classes": [
+    "C4"
+  ],
+  "rule": "a filter may change where a candidate goes",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-search-xss",
+    "url": "https://shop.example.test/api/search?q=probe",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "html-reflection",
+    "parameter": "query:q",
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://shop.example.test/api/search?q=%3Csvg%20onload%3Dprint()%3E",
+        "status": 403,
+        "headers": {
+          "cf-mitigated": "challenge",
+          "content-type": "text/html; charset=UTF-8",
+          "server": "cloudflare"
+        },
+        "expected_content_type": "application/json",
+        "content_type": "text/html",
+        "body_sha256": "2e3957daa8b6882c45ef33d98223e74c23ab4a50d1d741823004dfd6ee84ac83",
+        "title": "Just a moment..."
+      }
+    ]
+  },
+  "transition": {
+    "state": "blocked_at_edge_origin_unknown",
+    "edge_evidence_ref": "obs-1",
+    "bypass_search": "open",
+    "recheck_by": "2026-11-17"
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": [],
+    "labels": [
+      "EDGE_CHALLENGE"
+    ]
+  }
+}

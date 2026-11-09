@@ -1,0 +1,123 @@
+{
+  "fixture_id": "F17",
+  "synthetic": true,
+  "title": "Vended product grouped by product and version, vendor owner pre-staged, unowned routed not dropped",
+  "classes": [
+    "G1",
+    "A9",
+    "O1"
+  ],
+  "rule": "group vended products by product and version; keep per-deployable reachability",
+  "kind": "group",
+  "group_by": "component",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "vendor_owners": {
+      "ExampleGateway": "vendor-relationship: ExampleGateway (third-party management)"
+    }
+  },
+  "candidates": [
+    {
+      "id": "v1",
+      "url": "https://gw1.example.test/",
+      "method": "GET",
+      "auth_context": "anonymous",
+      "sink_class": "component-cve",
+      "parameter": null,
+      "reachability": "reached from internet",
+      "component": {
+        "product": "ExampleGateway",
+        "version": "4.2.1",
+        "advisory": "EXAMPLE-ADV-2026-014"
+      }
+    },
+    {
+      "id": "v2",
+      "url": "https://gw2.example.test/",
+      "method": "GET",
+      "auth_context": "anonymous",
+      "sink_class": "component-cve",
+      "parameter": null,
+      "reachability": "reached from internet",
+      "component": {
+        "product": "ExampleGateway",
+        "version": "4.2.1",
+        "advisory": "EXAMPLE-ADV-2026-014"
+      }
+    },
+    {
+      "id": "v3",
+      "url": "https://gw3.example.test/",
+      "method": "GET",
+      "auth_context": "anonymous",
+      "sink_class": "component-cve",
+      "parameter": null,
+      "reachability": "internal segment only",
+      "component": {
+        "product": "ExampleGateway",
+        "version": "4.2.1",
+        "advisory": "EXAMPLE-ADV-2026-014"
+      }
+    },
+    {
+      "id": "v4",
+      "url": "https://gw4.example.test/",
+      "method": "GET",
+      "auth_context": "anonymous",
+      "sink_class": "component-cve",
+      "parameter": null,
+      "reachability": "reached from internet",
+      "component": {
+        "product": "ExampleGateway",
+        "version": "4.3.0",
+        "advisory": "EXAMPLE-ADV-2026-014"
+      }
+    },
+    {
+      "id": "v5",
+      "url": "https://cms.example.test/",
+      "method": "GET",
+      "auth_context": "anonymous",
+      "sink_class": "component-cve",
+      "parameter": null,
+      "reachability": "reached from internet",
+      "component": {
+        "product": "OtherCMS",
+        "version": "2.0.7",
+        "advisory": "EXAMPLE-ADV-2026-031"
+      }
+    }
+  ],
+  "expected": {
+    "verdict": "GROUPED",
+    "groups": [
+      [
+        "v1",
+        "v2",
+        "v3"
+      ],
+      [
+        "v4"
+      ],
+      [
+        "v5"
+      ]
+    ],
+    "group_owners": [
+      {
+        "members": [
+          "v1",
+          "v2",
+          "v3"
+        ],
+        "owner_prefix": "vendor-relationship: ExampleGateway"
+      },
+      {
+        "members": [
+          "v5"
+        ],
+        "owner_prefix": "UNOWNED"
+      }
+    ]
+  }
+}

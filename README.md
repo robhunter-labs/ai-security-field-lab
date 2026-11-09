@@ -12,6 +12,7 @@ Status labels are the same for every study listed here (the practice framework, 
 | VulnHunter against crAPI | One controlled evaluation of an AI security tool against a deliberately vulnerable API | Observed (one controlled run) | [VulnHunter field study](https://robhunterworks.com/writing/vulnhunter-crapi/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study) |
 | Local model bench | A bench, threat model, controls, and pen-test map for a refusal-reduced model running on one laptop | Observed, plus built-not-exercised checks | [The Model That Says Yes](https://robhunterworks.com/writing/the-model-that-says-yes/) | [local-model-bench](https://github.com/robhunter-labs/local-model-bench) |
 | When the machine finds more | A synthetic review exercise for deciding what a person does with a tool's candidate findings | Built, not exercised | [When the Machine Finds More](https://robhunterworks.com/writing/when-the-machine-finds-more/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study/tree/main/source/review-workbench) |
+| Validation package | A schema for the minimum validation package, a checker that refuses records where a filter closes what only an oracle may close, a catalog of 103 ways a tool's candidate can be duplicate, untrue, or not actionable, and 30 synthetic fixtures | Built, not exercised | [Proof Outside the Model](https://robhunterworks.com/writing/proof-outside-the-model/) | [validation-package](validation-package/) |
 
 ## Planned
 

@@ -1,0 +1,50 @@
+{
+  "fixture_id": "F26",
+  "synthetic": true,
+  "title": "A handoff replay that needs a headless browser harness must be marked tester-assisted",
+  "classes": [
+    "D4"
+  ],
+  "rule": "oracles that do not travel need a self-check or a tester-assisted mark",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "claim": {
+      "statement": "Stored XSS on app.example.test: the display name renders unescaped on /team and executes script for any viewer.",
+      "class": "cross-site scripting (stored)",
+      "asset": "app.example.test",
+      "precondition": "any authenticated user can set a display name",
+      "effect": "script runs in other users' sessions on /team",
+      "non_unique_classes": [
+        "D4"
+      ],
+      "request_shape": null
+    },
+    "oracle": {
+      "type": "browser-execution",
+      "bounded_output": "Whether print() fired in a headless browser viewing /team.",
+      "positive_control": {
+        "description": "A harness page with the same payload executes print() in the same browser build.",
+        "ran": true,
+        "fired": true
+      }
+    },
+    "replay": {
+      "handoff": {
+        "tester_assisted": false,
+        "requires_tester_tooling": [
+          "headless browser harness with a print() hook"
+        ]
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "HANDOFF_NEEDS_TESTER_MARK"
+    ]
+  }
+}

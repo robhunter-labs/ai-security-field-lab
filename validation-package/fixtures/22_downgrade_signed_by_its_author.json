@@ -1,0 +1,36 @@
+{
+  "fixture_id": "F22",
+  "synthetic": true,
+  "title": "A downgrade signed by its own author routes up",
+  "classes": [
+    "T5"
+  ],
+  "rule": "any downgrade from the tool's severity is routed up, not self-signed",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "severity": {
+      "validated_rating": "Medium",
+      "signed_by": "validator-1",
+      "change_log": [
+        {
+          "from": "High",
+          "to": "Medium",
+          "by": "validator-1",
+          "at": "2026-11-03T16:40:00Z",
+          "reason": "Needs a valid session; I judged the impact lower."
+        }
+      ]
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "SELF_SIGNED_DOWNGRADE"
+    ],
+    "route_to": "lead signer (a second person)"
+  }
+}

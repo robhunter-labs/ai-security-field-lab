@@ -1,0 +1,62 @@
+{
+  "fixture_id": "F09",
+  "synthetic": true,
+  "title": "Via header from the tester's own proxy: demoted as a tester-path artifact",
+  "classes": [
+    "C1"
+  ],
+  "rule": "a demotion reason must be backed by evidence (clean-egress diff)",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "tester_chain_signatures": [
+      {
+        "header": "Via",
+        "contains": "tester-gw"
+      }
+    ]
+  },
+  "candidate": {
+    "id": "cand-via",
+    "url": "https://api.example.test/health",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "info-disclosure-header",
+    "parameter": null,
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "path": "proxy",
+        "url": "https://api.example.test/health",
+        "status": 200,
+        "headers": {
+          "Via": "1.1 tester-gw (squid/5.7)",
+          "Content-Type": "application/json"
+        }
+      },
+      {
+        "id": "obs-2",
+        "role": "direct-replay",
+        "path": "direct",
+        "url": "https://api.example.test/health",
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    ]
+  },
+  "transition": {
+    "state": "demoted",
+    "reason_code": "TESTER_PATH_ARTIFACT",
+    "recheck_by": "2026-12-01"
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": [],
+    "labels": [
+      "TESTER_CHAIN_HEADER"
+    ]
+  }
+}

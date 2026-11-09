@@ -1,0 +1,47 @@
+{
+  "fixture_id": "F06",
+  "synthetic": true,
+  "title": "Same-origin login bounce: 'admin panel found' demoted as LOGIN_BOUNCE",
+  "classes": [
+    "A1",
+    "F2"
+  ],
+  "rule": "a filter may lower rank with a supported reason",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-admin",
+    "url": "https://app.example.test/admin/users",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "admin-surface",
+    "parameter": null,
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://app.example.test/admin/users",
+        "status": 302,
+        "headers": {
+          "Location": "/login?next=%2Fadmin%2Fusers"
+        }
+      }
+    ]
+  },
+  "transition": {
+    "state": "demoted",
+    "reason_code": "LOGIN_BOUNCE",
+    "recheck_by": "2026-11-10",
+    "note": "Session expired mid-run; re-test with an authenticated canary."
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": [],
+    "labels": [
+      "SAME_ORIGIN_REDIRECT",
+      "LOGIN_BOUNCE"
+    ]
+  }
+}

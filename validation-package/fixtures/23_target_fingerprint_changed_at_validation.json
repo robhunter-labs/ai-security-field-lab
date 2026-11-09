@@ -1,0 +1,58 @@
+{
+  "fixture_id": "F23",
+  "synthetic": true,
+  "title": "Target changed between capture and validation: re-baseline, do not close",
+  "classes": [
+    "X1",
+    "O3",
+    "L2",
+    "A7"
+  ],
+  "rule": "'fixed since' is not a false positive",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-report-export",
+    "url": "https://app.example.test/reports/export?id=77",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "object-read",
+    "parameter": "query:id",
+    "observations": [],
+    "captured_fingerprint": {
+      "build": "2026.10.4",
+      "tls_cert_sha256": "46408b09719a7042548b6399e6bd5ba2d83a259ae30ebdca5c14660aca50b85c",
+      "response_fp": "fp-41"
+    }
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "refuted",
+    "reason": "Could not reproduce at validation.",
+    "oracle": {
+      "type": "identity-differential",
+      "positive_control": {
+        "description": "Owner reads own export and receives 200.",
+        "ran": true,
+        "fired": true
+      }
+    },
+    "validation_fingerprint": {
+      "build": "2026.11.1",
+      "tls_cert_sha256": "1a880062245d3b2579168d3d3939d35c4e873ac89a42cbca74e2aa0210850bf3",
+      "response_fp": "fp-41"
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "TARGET_CHANGED"
+    ],
+    "labels": [
+      "TARGET_CHANGED"
+    ],
+    "suggested_state": "rebaseline_required"
+  }
+}

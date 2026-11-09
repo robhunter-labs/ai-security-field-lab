@@ -1,0 +1,71 @@
+{
+  "fixture_id": "F13",
+  "synthetic": true,
+  "title": "HTTP callback from the target's egress range, decoy silent: confirmation accepted",
+  "classes": [
+    "C10"
+  ],
+  "rule": "out-of-band confirmation needs source attribution and a silent decoy",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "target_egress_cidrs": [
+      "192.0.2.0/24"
+    ],
+    "intermediary_asn_orgs": [
+      "ExampleCDN",
+      "ExampleMailScanner"
+    ]
+  },
+  "candidate": {
+    "id": "cand-ssrf",
+    "url": "https://api.example.test/v2/webhooks/test",
+    "method": "POST",
+    "auth_context": "user",
+    "sink_class": "server-side-fetch",
+    "parameter": "body:url",
+    "observations": []
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "confirmed",
+    "reason": "HTTP fetch of the probe path from the application's egress address.",
+    "oracle": {
+      "type": "out-of-band",
+      "positive_control": {
+        "description": "Ask the target to fetch a known-good canary URL on the same listener (egress canary).",
+        "ran": true,
+        "fired": true
+      },
+      "evidence": {
+        "probe_token": "t-91af2c",
+        "decoy_token": "d-77c0e1",
+        "callbacks": [
+          {
+            "token": "t-91af2c",
+            "protocol": "dns",
+            "source_ip": "198.51.100.53",
+            "asn_org": "ExampleResolverNet",
+            "at": "2026-11-03T15:10:02Z"
+          },
+          {
+            "token": "t-91af2c",
+            "protocol": "http",
+            "source_ip": "192.0.2.44",
+            "asn_org": "ExampleHostingCo",
+            "user_agent": "python-requests/2.31",
+            "path": "/t-91af2c",
+            "at": "2026-11-03T15:10:03Z"
+          }
+        ]
+      }
+    }
+  },
+  "expected": {
+    "verdict": "ACCEPT",
+    "reason_codes": [],
+    "labels": [
+      "CALLBACK_HTTP_FROM_TARGET"
+    ]
+  }
+}

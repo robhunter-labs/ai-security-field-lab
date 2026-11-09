@@ -1,0 +1,60 @@
+{
+  "fixture_id": "F07",
+  "synthetic": true,
+  "title": "Off-origin redirect: merge as duplicate refused, routed to a scope hold",
+  "classes": [
+    "A1",
+    "O2"
+  ],
+  "rule": "an off-origin redirect is a scope question, not a duplicate",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z",
+    "candidates": [
+      {
+        "id": "cand-billing",
+        "url": "https://app.example.test/billing/portal?ref=home",
+        "method": "GET",
+        "auth_context": "user",
+        "sink_class": "open-redirect",
+        "parameter": "query:ref",
+        "observations": []
+      }
+    ]
+  },
+  "candidate": {
+    "id": "cand-partner",
+    "url": "https://app.example.test/billing/portal?ref=x",
+    "method": "GET",
+    "auth_context": "user",
+    "sink_class": "open-redirect",
+    "parameter": "query:ref",
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://app.example.test/billing/portal?ref=x",
+        "status": 302,
+        "headers": {
+          "Location": "https://pay.partner-idp.test/session/start?ref=x"
+        }
+      }
+    ]
+  },
+  "transition": {
+    "state": "merged",
+    "into": "cand-billing",
+    "reason": "REDIRECT_CONVERGES",
+    "claim_key": "GET | https://app.example.test/billing/portal?ref | auth=user | sink=open-redirect | param=query:ref"
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "OFF_ORIGIN_REDIRECT_IS_SCOPE_QUESTION"
+    ],
+    "labels": [
+      "OFF_ORIGIN_REDIRECT"
+    ],
+    "suggested_state": "scope_hold"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "fixture_id": "F03",
+  "synthetic": true,
+  "title": "A cached 200 cannot confirm an unauthenticated read",
+  "classes": [
+    "C6",
+    "F2"
+  ],
+  "rule": "the oracle's observation must come from the target, not a cache, before any close",
+  "kind": "transition",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "candidate": {
+    "id": "cand-acct-summary",
+    "url": "https://app.example.test/account/summary",
+    "method": "GET",
+    "auth_context": "anonymous",
+    "sink_class": "object-read",
+    "parameter": null,
+    "observations": [
+      {
+        "id": "obs-1",
+        "role": "candidate",
+        "url": "https://app.example.test/account/summary",
+        "status": 200,
+        "headers": {
+          "cf-cache-status": "HIT",
+          "age": "312",
+          "content-type": "application/json"
+        },
+        "content_type": "application/json",
+        "body_sha256": "2c780024ec8eb738f937b47b2c460a113e9f4a8cbc547512795b00ac6a216b81",
+        "cache_buster": false
+      }
+    ]
+  },
+  "transition": {
+    "state": "closed_by_oracle",
+    "outcome": "confirmed",
+    "reason": "Unauthenticated request returned an account summary.",
+    "oracle": {
+      "type": "identity-differential",
+      "observation_refs": [
+        "obs-1"
+      ],
+      "positive_control": {
+        "description": "A signed-in test user receives their own summary.",
+        "ran": true,
+        "fired": true
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "CACHE_ARTIFACT_UNCONTROLLED"
+    ],
+    "labels": [
+      "CACHE_HIT",
+      "CACHE_UNCONTROLLED"
+    ],
+    "suggested_state": "demoted"
+  }
+}

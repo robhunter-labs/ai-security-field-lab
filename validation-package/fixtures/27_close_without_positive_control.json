@@ -1,0 +1,27 @@
+{
+  "fixture_id": "F27",
+  "synthetic": true,
+  "title": "A confirmed close whose positive control never ran is refused",
+  "classes": [],
+  "rule": "every close needs an oracle and a positive control",
+  "kind": "package",
+  "context": {
+    "now": "2026-11-03T18:00:00Z"
+  },
+  "package_base": "_base/package_high_idor.json",
+  "package_patch": {
+    "oracle": {
+      "positive_control": {
+        "description": "Not run.",
+        "ran": false,
+        "fired": false
+      }
+    }
+  },
+  "expected": {
+    "verdict": "REFUSE",
+    "reason_codes": [
+      "CLOSE_WITHOUT_POSITIVE_CONTROL"
+    ]
+  }
+}

@@ -1,0 +1,366 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/robhunter-labs/ai-security-field-lab/validation-package/schema/package.schema.json",
+  "title": "Minimum validation package (v0.1, prototype)",
+  "description": "The minimum record a validated candidate carries. Each group answers part of the four questions (unique, true, actionable, new). Weight scales with severity: pre-registration, independent replay and the Critical gate are enforced by check_package.py, not by this schema. Credentials are referenced, never inlined.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "package_id", "authorization", "claim", "severity", "oracle", "replay", "controls", "integrity", "review", "retest"],
+  "properties": {
+    "schema_version": { "const": "0.1" },
+    "package_id": { "type": "string", "pattern": "^VP-[A-Za-z0-9-]+$" },
+
+    "authorization": {
+      "description": "Was this target authorized, in this window, and is the replay safe to run?",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["roe_ref", "window", "replay_safety"],
+      "properties": {
+        "roe_ref": { "$ref": "#/$defs/text", "description": "Rules-of-engagement reference (an ID, not the document)." },
+        "window": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["start", "end"],
+          "properties": {
+            "start": { "$ref": "#/$defs/datetime" },
+            "end": { "$ref": "#/$defs/datetime" }
+          }
+        },
+        "replay_safety": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["class", "state_changing", "production_safe"],
+          "properties": {
+            "class": { "enum": ["read-only", "reversible-write", "state-changing", "destructive-do-not-replay"] },
+            "state_changing": { "type": "boolean" },
+            "production_safe": { "type": "boolean" },
+            "notes": { "type": "string" }
+          }
+        }
+      }
+    },
+
+    "claim": {
+      "description": "One sentence: class, asset, precondition, effect. Stable ID reused at retest.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["claim_id", "statement", "class", "asset", "precondition", "effect", "tool"],
+      "properties": {
+        "claim_id": { "type": "string", "pattern": "^CLM-[A-Za-z0-9-]+$" },
+        "statement": { "$ref": "#/$defs/text" },
+        "class": { "$ref": "#/$defs/text" },
+        "asset": { "$ref": "#/$defs/text" },
+        "precondition": { "$ref": "#/$defs/text" },
+        "effect": { "$ref": "#/$defs/text" },
+        "tool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version"],
+          "properties": {
+            "name": { "$ref": "#/$defs/text" },
+            "version": { "$ref": "#/$defs/text" }
+          }
+        },
+        "request_shape": {
+          "description": "Inputs to the claim key: method, URL, auth context, sink class, parameter, middleware.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "method": { "type": "string" },
+            "url": { "type": "string" },
+            "auth_context": { "type": "string" },
+            "sink_class": { "type": "string" },
+            "parameter": { "type": ["string", "null"] },
+            "middleware": { "type": ["string", "null"] }
+          }
+        },
+        "non_unique_classes": {
+          "description": "Catalog class IDs considered for this claim (see catalog/NON_UNIQUE_CLASSES.md).",
+          "type": "array",
+          "items": { "type": "string", "pattern": "^([A-Z][0-9]{1,2}|X[0-9])$" }
+        }
+      }
+    },
+
+    "severity": {
+      "description": "Tool severity is a claim. Validated severity is a decision with a named method and a vector. Downgrades route up.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["tool_rating", "validated_rating", "cvss_v4_vector", "cvss_v4_nomenclature", "method", "evidence", "signed_by", "change_log"],
+      "properties": {
+        "tool_rating": { "$ref": "#/$defs/rating", "description": "The tool's severity, labelled as the tool's. Never enters the vulnerability-management system." },
+        "validated_rating": { "$ref": "#/$defs/rating" },
+        "cvss_v4_vector": { "type": "string", "pattern": "^CVSS:4\\.0/" },
+        "cvss_v4_nomenclature": { "enum": ["CVSS-B", "CVSS-BT", "CVSS-BE", "CVSS-BTE"] },
+        "method": { "$ref": "#/$defs/text" },
+        "evidence": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reachability", "impact"],
+          "properties": {
+            "reachability": { "enum": ["proven", "inferred"], "description": "Reachability from where the threat actually is." },
+            "impact": { "enum": ["proven", "inferred"] }
+          }
+        },
+        "signed_by": { "$ref": "#/$defs/text" },
+        "change_log": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["from", "to", "by", "at", "reason"],
+            "properties": {
+              "from": { "$ref": "#/$defs/rating" },
+              "to": { "$ref": "#/$defs/rating" },
+              "by": { "$ref": "#/$defs/text" },
+              "at": { "$ref": "#/$defs/datetime" },
+              "reason": { "$ref": "#/$defs/text" }
+            }
+          }
+        }
+      }
+    },
+
+    "oracle": {
+      "description": "Only an oracle may close. Type comes from a closed list; 'none' is allowed but cannot close.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "strength", "bounded_output", "positive_control"],
+      "properties": {
+        "type": { "enum": ["identity-differential", "out-of-band", "timing-distribution", "browser-execution", "live-effective-permission", "version-or-reachability", "none"] },
+        "strength": { "enum": ["strong", "moderate", "weak", "none"] },
+        "bounded_output": { "$ref": "#/$defs/text", "description": "What the oracle reads, and nothing more." },
+        "positive_control": {
+          "description": "Proof the oracle could have fired here (e.g. a canary callback from the target, a benign page that executes print()).",
+          "type": ["object", "null"],
+          "additionalProperties": false,
+          "required": ["description", "ran", "fired"],
+          "properties": {
+            "description": { "$ref": "#/$defs/text" },
+            "ran": { "type": "boolean" },
+            "fired": { "type": "boolean" },
+            "evidence_ref": { "type": "string" }
+          }
+        },
+        "if_none_what_would_settle": { "type": ["string", "null"] },
+        "evidence": { "type": "object", "description": "Type-specific oracle evidence (callbacks, timing samples). Free-form in v0.1." }
+      }
+    },
+
+    "replay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["request", "environment", "identities", "executed_at", "executed_by", "handoff"],
+      "properties": {
+        "request": { "$ref": "#/$defs/request" },
+        "environment": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["target", "build", "utc", "source_ip", "egress_ip"],
+          "properties": {
+            "target": { "$ref": "#/$defs/text" },
+            "build": { "$ref": "#/$defs/text" },
+            "utc": { "$ref": "#/$defs/datetime" },
+            "source_ip": { "$ref": "#/$defs/text" },
+            "egress_ip": { "$ref": "#/$defs/text" }
+          }
+        },
+        "identities": {
+          "description": "Test identity per role. Credentials are referenced (env:, vault:, secretref:), never inlined.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["role", "credential_ref"],
+            "properties": {
+              "role": { "type": "string", "pattern": "^[a-z0-9_-]+$" },
+              "credential_ref": { "type": "string", "pattern": "^(env|vault|secretref):[A-Za-z0-9_./-]+$" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "executed_at": { "$ref": "#/$defs/datetime" },
+        "executed_by": { "$ref": "#/$defs/text" },
+        "independent_replay": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["by", "at", "result"],
+          "properties": {
+            "by": { "$ref": "#/$defs/text" },
+            "at": { "$ref": "#/$defs/datetime" },
+            "result": { "enum": ["reproduced", "not-reproduced", "partial"] }
+          }
+        },
+        "handoff": {
+          "description": "The developer-facing replay. Oracles that do not travel need a self-check or a tester-assisted mark.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["tester_assisted", "requires_tester_tooling"],
+          "properties": {
+            "tester_assisted": { "type": "boolean" },
+            "requires_tester_tooling": { "type": "array", "items": { "type": "string" } },
+            "self_check": { "type": ["string", "null"] },
+            "investigation": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "route": { "type": "string" },
+                "source": { "type": "string" },
+                "config": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "controls": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline", "negative", "expected_difference"],
+      "properties": {
+        "baseline": { "$ref": "#/$defs/control" },
+        "negative": { "$ref": "#/$defs/control" },
+        "positive": { "$ref": "#/$defs/control" },
+        "expected_difference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["statement", "decision_rule", "recorded_at"],
+          "properties": {
+            "statement": { "$ref": "#/$defs/text" },
+            "decision_rule": { "$ref": "#/$defs/text" },
+            "recorded_at": { "$ref": "#/$defs/datetime", "description": "For High and Critical this must precede replay.executed_at (pre-registration)." }
+          }
+        }
+      }
+    },
+
+    "integrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["data_touched", "cleanup"],
+      "properties": {
+        "artifact_hashes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["ref", "sha256"],
+            "properties": {
+              "ref": { "type": "string" },
+              "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+            }
+          }
+        },
+        "data_touched": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["categories", "sensitive", "minimized"],
+          "properties": {
+            "categories": { "type": "array", "items": { "type": "string" } },
+            "sensitive": { "type": "boolean" },
+            "minimized": { "type": "boolean" }
+          }
+        },
+        "cleanup": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["item", "created_at", "removed_at"],
+            "properties": {
+              "item": { "$ref": "#/$defs/text" },
+              "created_at": { "$ref": "#/$defs/datetime" },
+              "removed_at": { "type": ["string", "null"], "format": "date-time" }
+            }
+          }
+        }
+      }
+    },
+
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["questions", "disposition", "reviewer", "date", "scope"],
+      "properties": {
+        "questions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["unique", "true", "actionable", "new"],
+          "properties": {
+            "unique": { "$ref": "#/$defs/question" },
+            "true": { "$ref": "#/$defs/question" },
+            "actionable": { "$ref": "#/$defs/question" },
+            "new": { "$ref": "#/$defs/question" }
+          }
+        },
+        "disposition": { "enum": ["confirmed", "dismissed", "pending", "blocked_at_edge_origin_unknown", "scope_hold", "rebaseline_required"] },
+        "reviewer": { "$ref": "#/$defs/text" },
+        "date": { "type": "string", "format": "date", "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["proven", "of", "statement"],
+          "properties": {
+            "proven": { "type": "integer", "minimum": 0 },
+            "of": { "type": "integer", "minimum": 1 },
+            "statement": { "type": "string", "pattern": "^\\d+ of \\d+" }
+          }
+        },
+        "remediation": { "type": "string" },
+        "verify_replay": { "type": "string" }
+      }
+    },
+
+    "retest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["replay_ref"],
+      "properties": {
+        "replay_ref": { "$ref": "#/$defs/text" },
+        "at": { "type": ["string", "null"], "format": "date-time" },
+        "expected_refusal_observed": { "type": ["boolean", "null"] },
+        "controls_still_behaving": { "type": ["boolean", "null"] },
+        "severity_rederived": { "type": ["string", "null"] }
+      }
+    }
+  },
+
+  "$defs": {
+    "text": { "type": "string", "minLength": 1 },
+    "datetime": { "type": "string", "format": "date-time", "pattern": "^\\d{4}-\\d{2}-\\d{2}T" },
+    "rating": { "enum": ["None", "Low", "Medium", "High", "Critical"] },
+    "request": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "url", "headers"],
+      "properties": {
+        "method": { "enum": ["GET", "HEAD", "OPTIONS", "POST", "PUT", "PATCH", "DELETE"] },
+        "url": { "type": "string", "pattern": "^https?://" },
+        "headers": { "type": "object", "description": "Use {{identity:<role>}} for any credential." },
+        "body": { "type": ["string", "null"] }
+      }
+    },
+    "control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "$ref": "#/$defs/text" },
+        "evidence_ref": { "type": "string" },
+        "request": { "$ref": "#/$defs/request" }
+      }
+    },
+    "question": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["answer", "reason", "alternative_ruled_out"],
+      "properties": {
+        "answer": { "enum": ["yes", "no", "unsure"] },
+        "reason": { "$ref": "#/$defs/text" },
+        "alternative_ruled_out": { "$ref": "#/$defs/text" }
+      }
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "schema_version": "0.1",
+  "package_id": "VP-0001",
+  "authorization": {
+    "roe_ref": "ROE-LAB-2026-01",
+    "window": { "start": "2026-11-02T13:00:00Z", "end": "2026-11-06T22:00:00Z" },
+    "replay_safety": {
+      "class": "read-only",
+      "state_changing": false,
+      "production_safe": true,
+      "notes": "Reads one seeded invoice record; writes nothing."
+    }
+  },
+  "claim": {
+    "claim_id": "CLM-0001",
+    "statement": "Authorization (IDOR) on api.example.test: any signed-in user can read another user's invoice metadata by changing the numeric invoice ID in GET /v2/invoices/{id}.",
+    "class": "authorization / insecure direct object reference",
+    "asset": "api.example.test",
+    "precondition": "any authenticated user session",
+    "effect": "read of another user's invoice metadata (owner, amount, due date)",
+    "tool": { "name": "example-agent", "version": "0.9.2" },
+    "request_shape": {
+      "method": "GET",
+      "url": "https://api.example.test/v2/invoices/48213?view=full",
+      "auth_context": "user",
+      "sink_class": "object-read",
+      "parameter": "path:invoice_id",
+      "middleware": null
+    },
+    "non_unique_classes": ["F3", "A6"]
+  },
+  "severity": {
+    "tool_rating": "High",
+    "validated_rating": "High",
+    "cvss_v4_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:L/UI:N/VC:H/VI:N/VA:N/SC:N/SI:N/SA:N",
+    "cvss_v4_nomenclature": "CVSS-B",
+    "method": "CVSS v4.0 base metrics derived from the validated preconditions (PR:L, network) and the identity-differential result.",
+    "evidence": { "reachability": "proven", "impact": "proven" },
+    "signed_by": "lead-signer-1",
+    "change_log": []
+  },
+  "oracle": {
+    "type": "identity-differential",
+    "strength": "strong",
+    "bounded_output": "HTTP status and the owner_id field of the response body; nothing else is read or kept.",
+    "positive_control": {
+      "description": "Owner (identity 'owner') reads their own invoice 48213 and receives 200 with owner_id=owner.",
+      "ran": true,
+      "fired": true,
+      "evidence_ref": "art-03"
+    },
+    "if_none_what_would_settle": null
+  },
+  "replay": {
+    "request": {
+      "method": "GET",
+      "url": "https://api.example.test/v2/invoices/48213?view=full",
+      "headers": {
+        "Authorization": "Bearer {{identity:reader}}",
+        "Accept": "application/json"
+      },
+      "body": null
+    },
+    "environment": {
+      "target": "api.example.test",
+      "build": "2026.11.1-rc3",
+      "utc": "2026-11-03T15:04:00Z",
+      "source_ip": "198.51.100.23",
+      "egress_ip": "198.51.100.23"
+    },
+    "identities": [
+      { "role": "owner", "credential_ref": "env:VP_TOKEN_OWNER", "description": "seeded test user who owns invoice 48213" },
+      { "role": "reader", "credential_ref": "env:VP_TOKEN_READER", "description": "a second seeded test user with no relation to invoice 48213" }
+    ],
+    "executed_at": "2026-11-03T15:04:00Z",
+    "executed_by": "tester-1",
+    "independent_replay": { "by": "tester-2", "at": "2026-11-03T16:20:00Z", "result": "reproduced" },
+    "handoff": {
+      "tester_assisted": false,
+      "requires_tester_tooling": [],
+      "self_check": null,
+      "investigation": {
+        "route": "GET /v2/invoices/{id} (invoice service, public API gateway)",
+        "source": "invoices/handlers.py: get_invoice() loads by id without an owner filter (as observed in the lab build)",
+        "config": "gateway route policy 'invoices-read' requires a session but no object-level check"
+      }
+    }
+  },
+  "controls": {
+    "baseline": {
+      "description": "Reader requests their own invoice 48299 and receives 200 with owner_id=reader.",
+      "evidence_ref": "art-01"
+    },
+    "negative": {
+      "description": "The same request with no Authorization header returns 401.",
+      "evidence_ref": "art-02",
+      "request": {
+        "method": "GET",
+        "url": "https://api.example.test/v2/invoices/48213?view=full",
+        "headers": { "Accept": "application/json" },
+        "body": null
+      }
+    },
+    "positive": {
+      "description": "Owner reads invoice 48213 and receives 200 with owner_id=owner.",
+      "evidence_ref": "art-03"
+    },
+    "expected_difference": {
+      "statement": "If the finding is real, the reader receives 200 and an owner_id that is not theirs. If it is fixed, the reader receives 403 or 404.",
+      "decision_rule": "Finding present if and only if status == 200 and body.owner_id != the reader's own id.",
+      "recorded_at": "2026-11-03T14:50:00Z"
+    }
+  },
+  "integrity": {
+    "artifact_hashes": [
+      { "ref": "art-01", "sha256": "8f37dc56bc4a2ab8eaedd91cdfefda59cf4ce2bef5134c848f3a81253c7756a8" },
+      { "ref": "art-02", "sha256": "7450863b9c85b0655578dcec0447ff2c29944f8368c91e05d34e93670f2a03ce" },
+      { "ref": "art-03", "sha256": "aa91d15872951688d622d3279a5260240bed739e6605a1712ffca0b3eff05edc" }
+    ],
+    "data_touched": { "categories": ["seeded synthetic invoice metadata"], "sensitive": false, "minimized": true },
+    "cleanup": [
+      { "item": "seeded invoices 48213 and 48299 for the two test identities", "created_at": "2026-11-03T14:30:00Z", "removed_at": "2026-11-03T17:00:00Z" }
+    ]
+  },
+  "review": {
+    "questions": {
+      "unique": {
+        "answer": "yes",
+        "reason": "Claim key GET /v2/invoices/{int} | auth=user | sink=object-read has no earlier record.",
+        "alternative_ruled_out": "Not the /v1 route already on the list: /v1 enforces the owner check in the lab build (catalog A6)."
+      },
+      "true": {
+        "answer": "yes",
+        "reason": "Identity differential: reader received owner's record; owner positive control and unauthenticated negative control behaved as expected.",
+        "alternative_ruled_out": "Not the tester's own data (F3): the two seeded identities share nothing, and the response was not cached (no Age or cache-status header)."
+      },
+      "actionable": {
+        "answer": "yes",
+        "reason": "Owner pre-staged from the service's code-owners entry: invoice service team.",
+        "alternative_ruled_out": "Not a vendor-held layer: the handler is first-party code."
+      },
+      "new": {
+        "answer": "yes",
+        "reason": "No prior report, risk acceptance or VEX statement matches the claim key.",
+        "alternative_ruled_out": "Not a regression of a closed item: no fixed item shares the key."
+      }
+    },
+    "disposition": "confirmed",
+    "reviewer": "validator-1",
+    "date": "2026-11-03",
+    "scope": { "proven": 1, "of": 40, "statement": "1 of 40 invoice IDs proven; the other 39 share the claim key and are listed, not tested." },
+    "remediation": "Filter the invoice lookup by the caller's owner id (or tenant) in get_invoice(), and return 404 for objects the caller does not own.",
+    "verify_replay": "Run the same replay as the reader: expect 403 or 404. Run it as the owner: expect 200."
+  },
+  "retest": {
+    "replay_ref": "replay.request",
+    "at": null,
+    "expected_refusal_observed": null,
+    "controls_still_behaving": null,
+    "severity_rederived": null
+  }
+}
