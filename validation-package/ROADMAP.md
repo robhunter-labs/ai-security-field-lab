@@ -1,6 +1,6 @@
 # Roadmap
 
-Status today: **v1, built, not exercised.** Everything below is a plan, not a promise.
+Status today: **v1, checked on the included synthetic fixtures.** Everything below is a plan, not a promise.
 
 ## v1.1: make v1 honest about real input
 

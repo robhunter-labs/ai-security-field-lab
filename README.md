@@ -2,17 +2,18 @@
 
 This is where I keep the working side of my writing about AI and security: studies, benches, and small harness experiments, each tied to a piece on [robhunterworks.com](https://robhunterworks.com/writing/). I'm a practitioner exploring the edges, not someone handing down final answers. Every entry says what was actually tested and what wasn't.
 
-Bigger pieces live in their own repositories and are indexed here. Smaller ones get a folder on this shelf as they're written.
+Start with a study. Each entry links to the essay, the first thing to open, and what the evidence supports. Bigger pieces live in their own repositories and are indexed here; smaller ones get a folder on this shelf.
 
-Status labels are the same for every study listed here (the practice framework, a document set, uses Published instead): **Observed** (it happened, and the record is in the repo), **Built, not exercised** (the code exists and passes its own tests, but hasn't been run against a real system), and **Planned** (written down so it gets done; not done).
+| Study | Start here | Evidence |
+|---|---|---|
+| [Proof Outside the Model](https://robhunterworks.com/writing/proof-outside-the-model/) | [Run the validation package](validation-package/README.md#how-to-run-it): a checker that refuses records where a filter closes what only an oracle may close, a catalog of 103 ways a candidate can be duplicate, untrue or not actionable, and 30 synthetic fixtures | Checked on the included synthetic fixtures; operational use unmeasured |
+| [Where the Time Goes on a Local Model](https://robhunterworks.com/writing/where-the-time-goes-on-a-local-model/) | [Timing results](https://github.com/robhunter-labs/local-model-bench/blob/main/results/2026-10-21-timing/SUMMARY.md) and a [runner to time your own model](https://github.com/robhunter-labs/local-model-bench/tree/main/bench/timing) | Observed: 32 calls on one machine, Oct 21, 2026 |
+| [The Model That Says Yes](https://robhunterworks.com/writing/the-model-that-says-yes/) | [Pilot summary](https://github.com/robhunter-labs/local-model-bench/blob/main/results/pilot-transcribed/SUMMARY.md), then the bench's [spec](https://github.com/robhunter-labs/local-model-bench/blob/main/SPEC.md) and dry run | Pilot observed once on one laptop; bench checked on the included synthetic fixtures |
+| [Capital One's VulnHunter](https://robhunterworks.com/writing/vulnhunter-crapi/) | [Inspect the historical run](https://github.com/robhunter-labs/vulnhunter-crapi-field-study#start-here) · [v1.0.0 release](https://github.com/robhunter-labs/vulnhunter-crapi-field-study/releases/tag/v1.0.0) for citation | Observed in one controlled run |
+| [When the Machine Finds More](https://robhunterworks.com/writing/when-the-machine-finds-more/) | [Try the synthetic review exercise](https://github.com/robhunter-labs/vulnhunter-crapi-field-study/tree/main/source/review-workbench) | Checked on the included synthetic fixtures |
+| [Declared, Not Wired](https://robhunterworks.com/writing/declared-not-wired/) | [Run the four-route example](https://github.com/robhunter-labs/declared-not-wired#run-it) | Checked on the included synthetic fixtures; not run against a live agent framework |
 
-| Study | What it is | Status | Essay | Where |
-|---|---|---|---|---|
-| Declared, not wired | Paired allowed and denied routes that show whether a declared control actually sits on the path that acts | Built, not exercised | [Declared, Not Wired](https://robhunterworks.com/writing/declared-not-wired/) | [declared-not-wired](https://github.com/robhunter-labs/declared-not-wired) |
-| VulnHunter against crAPI | One controlled evaluation of an AI security tool against a deliberately vulnerable API | Observed (one controlled run) | [VulnHunter field study](https://robhunterworks.com/writing/vulnhunter-crapi/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study) |
-| Local model bench | A bench, threat model, controls, and pen-test map for a refusal-reduced model running on one laptop | Observed, plus built-not-exercised checks | [The Model That Says Yes](https://robhunterworks.com/writing/the-model-that-says-yes/) | [local-model-bench](https://github.com/robhunter-labs/local-model-bench) |
-| When the machine finds more | A synthetic review exercise for deciding what a person does with a tool's candidate findings | Built, not exercised | [When the Machine Finds More](https://robhunterworks.com/writing/when-the-machine-finds-more/) | [vulnhunter-crapi-field-study](https://github.com/robhunter-labs/vulnhunter-crapi-field-study/tree/main/source/review-workbench) |
-| Validation package | A schema for the minimum validation package, a checker that refuses records where a filter closes what only an oracle may close, a catalog of 103 ways a tool's candidate can be duplicate, untrue, or not actionable, and 30 synthetic fixtures | Built, not exercised | [Proof Outside the Model](https://robhunterworks.com/writing/proof-outside-the-model/) | [validation-package](validation-package/) |
+The labels mean the same thing everywhere on this shelf: **Observed** (it happened, and the record is in the repo), **Checked on the included synthetic fixtures** (the code runs and passes its own tests on the fixtures here, but hasn't been run against a real system), and **Planned** (written down so it gets done; not done). The practice framework, a document set, uses Published instead.
 
 ## Planned
 

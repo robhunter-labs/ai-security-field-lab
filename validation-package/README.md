@@ -1,6 +1,6 @@
 # validation-package
 
-**Status: Built, not exercised.** A small companion to the essay [*Proof Outside the Model*](https://robhunterworks.com/writing/proof-outside-the-model/). It has only been run against the synthetic fixtures in this folder. It has not seen a real tool's output, a real target or a real review queue.
+**Status: Checked on the included synthetic fixtures; operational use unmeasured.** A small companion to the essay [*Proof Outside the Model*](https://robhunterworks.com/writing/proof-outside-the-model/). It has only been run against the synthetic fixtures in this folder. It has not seen a real tool's output, a real target or a real review queue.
 
 The idea it tries to make concrete is one rule:
 

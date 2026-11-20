@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """check_package.py - validation-package and candidate-state checker (v1 prototype).
 
-Status: Built, not exercised. Synthetic fixtures only. It decides nothing:
+Status: checked on the included synthetic fixtures only. It decides nothing:
 it refuses records that break the rules below and says why.
 
 Core rule: a filter may lower a candidate's rank or change where it goes,
